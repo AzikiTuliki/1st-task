@@ -100,32 +100,29 @@ for i in range(len(who_ids)):
     strwhoid = who_ids[i].split("\n")[0].replace(" ", "")
     strwhoid1 = strwhoid.split("=")[1].replace(" ", "")
     new_who_ids.append(strwhoid1)
-    strwhoid=[]
-    strwhoid1=[]
+    strwhoid = []
+    strwhoid1 = []
 
 arr_for_ids = []
-for i in range(len(new_ids)):
-    query_body_for_ids = {
-        "query": {
-            "bool": {
-                "must": [
-                    {"match": {"what.process_id": new_ids[i]}},
-                    {"match": {"what.text": "A new process has been created"}},
-                    {"match": {"where.computer_name": new_who_ids[i]}}
-                ]
-            }
+query_body_for_ids = {
+    "query": {
+        "bool": {
+            "must": [
+                {"match": {"what.text": "A new process has been created"}},
+                #{"match": {"what.text": "A new process has been created"}},
+                {"match": {"where.computer_name": "PC7526"}}
+            ]
         }
     }
-    result_for_ids = client.search(index="security_events_1_19127", body=query_body_for_ids, size=1000)
-    for hit in result_for_ids['hits']['hits']:
-        str_id = '\n '.join(' = '.join((key, val)) for (key, val) in hit["_source"]["what"].items()) + '\n '.join(
-        ' = '.join((key, val)) for (key, val) in hit["_source"]["who"].items())
-        arr_for_ids.append(str_id)
+}
+result_for_ids = client.search(index="security_events_1_19127", body=query_body_for_ids, size=1000)
+for hit in result_for_ids['hits']['hits']:
+    str_id = '\n '.join(' = '.join((key, val)) for (key, val) in hit["_source"]["what"].items()) + '\n '.join(' = '.join((key, val)) for (key, val) in hit["_source"]["where"].items())
+    arr_for_ids.append(str_id)
 
 values_ids, counts_ids = np.unique(arr_for_ids, return_counts=True)
 
-for i in range(len(values_ids)):
-    print(values_ids[i])
-    print(counts_ids[i])
+separator_for_ids = "\n"
 
-print(arr_for_ids)
+qwerty = values_ids[0].split(separator_for_ids)
+print(qwerty)
